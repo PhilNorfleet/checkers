@@ -4,20 +4,22 @@ class Board
 
   attr_reader :board
 
-  def initialize(promote_test = false, empty = false, size = 8)
+  def initialize(test_stuff = false, empty = false, size = 8)
     @size = size
     @board = Array.new(8) { Array.new(8) }
-    init_pieces unless empty || promote_test
-    init_promote if promote_test
+    @test = test_stuff
+    init_pieces unless empty || test_stuff
+    init_test if test_stuff
   end
 
   def inspect
 
   end
 
-  def init_promote
-    Piece.new(:black, self, [1,1] )
-    Piece.new(:white, self, [6,6] )
+  def init_test
+    Piece.new(:black, self, [5,1] )
+    Piece.new(:white, self, [4,2] )
+    Piece.new(:white, self, [2,4] )
   end
 
 
@@ -37,9 +39,11 @@ class Board
   end
 
   def add_piece(piece,pos)
+
     raise 'position not empty' unless empty?(pos)
 
     self[pos] = piece
+
   end
 
 
@@ -55,11 +59,15 @@ class Board
 
 
   def dup
-    new_board = Board.new(true)
+
+    new_board = Board.new(false, true)
 
     pieces.each do |piece|
+
       piece.class.new(piece.color,new_board,piece.pos,piece.is_king?)
     end
+
+
 
     new_board
   end
@@ -68,10 +76,6 @@ class Board
   def empty?(pos)
     self[pos].nil?
   end
-
-
-
-
 
   def init_pieces
     @board.each_with_index do |row, i|
@@ -89,7 +93,6 @@ class Board
       end
     end
   end
-
 
 
   def render

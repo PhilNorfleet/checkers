@@ -1,4 +1,6 @@
-require 'byebug'
+class InvalidMoveError < RuntimeError
+end
+
 class Piece
 
   attr_reader :color, :pos, :rep
@@ -45,7 +47,6 @@ class Piece
   end
 
   def perform_jump(move_pos)
-    #byebug
     return false unless @board.valid_pos?(move_pos)
 
     jump_diff = [
@@ -93,6 +94,37 @@ class Piece
 
     true
 
+  end
+
+  def perform_moves!(move_seq)
+    if move_seq.length == 1
+      unless perform_slide(move_seq[0]) || perform_jump(move_seq[0])
+        raise InvalidMoveError
+      end
+    else
+      move_seq.each do |move|
+        raise InvalidMoveError unless perform_jump(move)
+      end
+    end
+  end
+
+  def valid_move_seq?(move_seq)
+    dupped = @board.dup
+    begin
+      dupped[pos].perform_moves!(move_seq)
+    rescue InvalidMoveError
+      false
+    else
+      true
+    end
+  end
+
+  def perform_moves(moves)
+    if valid_move_seq?(moves)
+      perform_moves!(moves)
+    else
+      raise InvalidMoveError
+    end
   end
 
   def is_king?
