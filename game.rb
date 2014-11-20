@@ -2,8 +2,8 @@ class Game
 
   def initialize(test_stuff = false, empty = false, size = 8)
     @board = Board.new(test_stuff, empty, size)
-    @w_player = HumanPlayer.new(:white)
-    @b_player = HumanPlayer.new(:black)
+    @w_player = HumanPlayer.new(:white,@board)
+    @b_player = HumanPlayer.new(:black,@board)
     @board.render
   end
 
@@ -14,7 +14,7 @@ class Game
         color = player.color
         puts "#{color.to_s} make your move"
         moves = player.get_input
-        moves[0].perform_moves(moves[1..-1])
+        @board[moves[0]].perform_moves(moves[1..-1])
         @board.render
       end
     end
